@@ -1,7 +1,7 @@
 const Pool = require("pg").Pool;
 const Sequelize = require('sequelize');
 
-const connection = new Sequelize('projeto', '', '', {
+const connection = new Sequelize('projeto', 'joaogui', 'senhagui', {
     host: 'localhost',
     dialect: 'postgres'
 });

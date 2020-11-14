@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const connection = require('./database/database')
 const Model = require('./database/models/Pergunta')
+const Model2 = require('./database/models/Resposta')
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -47,9 +48,21 @@ app.get('/pergunta/:id', (req, res) => {
     }).then(pergunta => {
         console.log(pergunta)
         if(pergunta != undefined) {
-            res.render('pergunta', {
-                pergunta: pergunta
+            Model2.findAll({
+                raw: true,
+                where: {
+                    perguntaId: pergunta.id
+                },
+                order: [['id', 'DESC']]
+            }).then((respostas) => {
+                res.render('pergunta', {
+                    pergunta: pergunta,
+                    respostas: respostas
+                })
             })
+
+
+            
         } else {
             res.redirect('/')
         }
@@ -57,6 +70,19 @@ app.get('/pergunta/:id', (req, res) => {
         
 
     });
+})
+
+
+app.post('/responder', (req, res) => {
+    let body = req.body.body
+    let perguntaId = req.body.perguntaId
+
+    Model2.create({
+        body: body,
+        perguntaId: perguntaId
+    }).then(() => {
+        res.redirect('/pergunta/'+ perguntaId)
+    })
 })
 
 app.listen(3000, () => {
